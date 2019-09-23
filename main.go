@@ -31,12 +31,13 @@ func findGo(url string, goCounter chan int, urlsLimiter chan bool, wg *sync.Wait
 	defer wg.Done()
 
 	contents, err := readFromURL(url)
-	if err != nil {
-		log.Fatalf("Error when executing GET request to %s: ", url, err)
+	if err == nil {
+		numberOfGo := strings.Count(contents, "Go")
+		fmt.Printf("Count for %s: %d\n", url, numberOfGo)
+		goCounter <- numberOfGo
+	} else {
+		fmt.Printf("Count for %s: ERROR (%s)\n", url, err)
 	}
-	numberOfGo := strings.Count(contents, "Go")
-	fmt.Printf("Count for %s: %d\n", url, numberOfGo)
-	goCounter <- numberOfGo
 	<-urlsLimiter
 }
 
